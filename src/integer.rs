@@ -76,3 +76,4 @@ make_ints!(u16, i16, 16);
 make_ints!(u32, i32, 32);
 make_ints!(u64, i64, 64);
 make_ints!(u128, i128, 128);
+make_ints!(usize, isize, 128);
