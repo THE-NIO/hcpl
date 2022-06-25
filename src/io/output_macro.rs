@@ -10,7 +10,7 @@ macro_rules! _io__output_macro__make {
         #[allow(unused_macros)]
         macro_rules! outln {
             ($dol ($dol tail:tt)*) => {
-                hcpl::io::output_macro::out_to!($cout; $dol ($dol tail)* '\n')
+                hcpl::io::output_macro::out_to!($cout; $dol ($dol tail)*; '\n')
             };
         }
     };
@@ -22,9 +22,12 @@ macro_rules! _io__output_macro__out_to {
         $cout.write($head).write(' ');
         hcpl::io::output_macro::out_to!($cout; $($tail)*);
     };
-    ($cout:ident; $head:tt $($tail:tt)*) => {
+    ($cout:ident; $head:expr; $($tail:tt)*) => {
         $cout.write($head);
         hcpl::io::output_macro::out_to!($cout; $($tail)*);
+    };
+    ($cout:ident; $head:expr) => {
+        $cout.write($head);
     };
     ($cout:ident;) => {};
 }

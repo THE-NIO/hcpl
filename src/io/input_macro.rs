@@ -16,6 +16,10 @@ macro_rules! _io__input_macro__input_from {
         let $var = hcpl::io::input_macro::read_value!($cin; $type $(+ $offset)? $(- $noffset)?);
         hcpl::io::input_macro::input_from!($cin; $($tail)*);
     };
+    ($cin:ident; mut $var:ident : $type:tt $(+ $offset:literal)? $(- $noffset:literal)?, $($tail:tt)*) => {
+        let mut $var = hcpl::io::input_macro::read_value!($cin; $type $(+ $offset)? $(- $noffset)?);
+        hcpl::io::input_macro::input_from!($cin; $($tail)*);
+    };
     ($cin:ident;) => {};
 }
 
