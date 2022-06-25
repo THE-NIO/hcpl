@@ -31,8 +31,8 @@ macro_rules! _io__input_macro__read_value {
     };
 }
 
-pub use {
-    crate::_io__input_macro__input_from as input_from,
-    crate::_io__input_macro__make as make,
-    crate::_io__input_macro__read_value as read_value,
+pub use crate::{
+    _io__input_macro__input_from as input_from,
+    _io__input_macro__make as make,
+    _io__input_macro__read_value as read_value,
 };
