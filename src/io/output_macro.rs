@@ -1,11 +1,13 @@
 #[macro_export]
 macro_rules! _io__output_macro__make {
     ($cout:ident, $dol:tt) => {
+        #[allow(unused_macros)]
         macro_rules! out {
             ($dol ($dol tail:tt)*) => {
                 hcpl::io::output_macro::out_to!($cout; $dol ($dol tail)*)
             };
         }
+        #[allow(unused_macros)]
         macro_rules! outln {
             ($dol ($dol tail:tt)*) => {
                 hcpl::io::output_macro::out_to!($cout; $dol ($dol tail)* '\n')

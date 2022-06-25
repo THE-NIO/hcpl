@@ -1,6 +1,7 @@
 #[macro_export]
 macro_rules! _io__input_macro__make {
     ($cin:ident, $dol:tt) => {
+        #[allow(unused_macros)]
         macro_rules! input {
             ($dol ($dol tail:tt)*) => {
                 hcpl::io::input_macro::input_from!($cin; $dol ($dol tail)*)
