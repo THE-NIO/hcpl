@@ -7,15 +7,10 @@ pub trait State {
 }
 
 pub fn solve<S: State>(n: u32, queries: &Vec<(u32, u32)>, mut state: S) -> Vec<S::Output> {
-    let mut pow = 1;
-    while 1 << pow < n {
-        pow += 1;
-    }
-
     let mut indices: Vec<usize> = (0..queries.len()).collect();
     indices.sort_by_cached_key(|&i| {
         let (x, y1) = queries[i];
-        super::space_filling_curves::hilbert(pow, x, y1 - 1)
+        super::space_filling_curves::triangular(x, y1 - 1, n)
     });
 
     let mut answer = Vec::<Option<S::Output>>::with_capacity(queries.len());
