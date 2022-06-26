@@ -30,8 +30,13 @@ impl<'a> Cin<'a> {
     }
 
     pub fn refill(&mut self) {
+        if self.is_eof {
+            return;
+        }
+
         self.lshift_buffer();
         let read = self.stdin.read(&mut self.buffer[self.end..]).unwrap();
+
         if read == 0 {
             self.is_eof = true;
         } else {
@@ -111,7 +116,12 @@ impl Cinable for char {
 macro_rules! read_integer_inner {
     ($t:ty, $cin:ident) => {{
         let mut res = 0;
-        while !$cin.buffer[$cin.begin].is_ascii_whitespace() {
+        while {
+            if $cin.begin == $cin.buffer.len() {
+                $cin.refill();
+            }
+            !$cin.buffer[$cin.begin].is_ascii_whitespace()
+        } {
             res *= 10;
             res += ($cin.buffer[$cin.begin] - b'0') as $t;
             $cin.begin += 1;
@@ -126,10 +136,6 @@ macro_rules! make_unsigned_cinable {
             fn read_from(cin: &mut Cin) -> Self {
                 cin.discard_whitespace();
 
-                if cin.end - cin.begin < $max_len {
-                    cin.refill();
-                }
-
                 read_integer_inner!($t, cin)
             }
         }
@@ -141,10 +147,6 @@ macro_rules! make_signed_cinable {
         impl Cinable for $t {
             fn read_from(cin: &mut Cin) -> Self {
                 cin.discard_whitespace();
-
-                if cin.end - cin.begin < $max_len {
-                    cin.refill();
-                }
 
                 let neg = if cin.buffer[cin.begin] == b'-' {
                     cin.begin += 1;

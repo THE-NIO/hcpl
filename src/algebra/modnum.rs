@@ -111,9 +111,12 @@ impl<const MOD: u32> DivAssign for Modnum<MOD> {
     }
 }
 
-impl<const MOD: u32> super::Ring for Modnum<MOD> {
-    const ADDITIVE_IDENTITY: Self = Self::new(0);
-    const MULTIPLICATIVE_IDENTITY: Self = Self::new(1);
+impl<const MOD: u32> super::monoid::AdditiveIdentity for Modnum<MOD> {
+    const VALUE: Self = Self::new(0);
+}
+
+impl<const MOD: u32> super::monoid::MultiplicativeIdentity for Modnum<MOD> {
+    const VALUE: Self = Self::new(1);
 }
 
 impl<const MOD: u32> From<usize> for Modnum<MOD> {

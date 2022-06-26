@@ -1,5 +1,5 @@
 use crate::algebra::Ring;
-use std::{fmt::Debug, ops::DivAssign};
+use std::{convert::TryFrom, fmt::Debug, ops::DivAssign};
 
 /// In-place Fast Walsh–Hadamard Transform of slice a'''
 pub fn fwht<T: Copy + Ring + DivAssign<T> + TryFrom<usize>>(a: &mut [T], inv: bool)
