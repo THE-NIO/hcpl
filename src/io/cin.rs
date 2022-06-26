@@ -1,3 +1,4 @@
+use crate::integer::Integer;
 use std::io::Read;
 
 pub struct Cin<'a> {
@@ -109,7 +110,14 @@ impl Cinable for char {
     fn read_from(cin: &mut Cin) -> Self {
         cin.discard_whitespace();
         let mut ate_one = false;
-        cin.read_until(|_| if ate_one { true } else { ate_one = true; false })[0] as char
+        cin.read_until(|_| {
+            if ate_one {
+                true
+            } else {
+                ate_one = true;
+                false
+            }
+        })[0] as char
     }
 }
 
@@ -131,11 +139,10 @@ macro_rules! read_integer_inner {
 }
 
 macro_rules! make_unsigned_cinable {
-    ($t:ty, $max_len:literal) => {
+    ($t:ty) => {
         impl Cinable for $t {
             fn read_from(cin: &mut Cin) -> Self {
                 cin.discard_whitespace();
-
                 read_integer_inner!($t, cin)
             }
         }
@@ -143,7 +150,7 @@ macro_rules! make_unsigned_cinable {
 }
 
 macro_rules! make_signed_cinable {
-    ($t:ty, $unsigned_t:ty, $max_len:literal) => {
+    ($t:ty) => {
         impl Cinable for $t {
             fn read_from(cin: &mut Cin) -> Self {
                 cin.discard_whitespace();
@@ -154,7 +161,7 @@ macro_rules! make_signed_cinable {
                 } else {
                     false
                 };
-                let res = read_integer_inner!($unsigned_t, cin);
+                let res = read_integer_inner!(<$t as Integer>::AsUnsigned, cin);
                 if neg {
                     res.overflowing_neg().0 as $t
                 } else {
@@ -164,16 +171,16 @@ macro_rules! make_signed_cinable {
         }
     };
 }
-make_unsigned_cinable!(u8, 3);
-make_unsigned_cinable!(u16, 5);
-make_unsigned_cinable!(u32, 10);
-make_unsigned_cinable!(u64, 20);
-make_unsigned_cinable!(u128, 39);
-make_unsigned_cinable!(usize, 20); // TODO: calculate these numbers using const
+make_unsigned_cinable!(u8);
+make_unsigned_cinable!(u16);
+make_unsigned_cinable!(u32);
+make_unsigned_cinable!(u64);
+make_unsigned_cinable!(u128);
+make_unsigned_cinable!(usize);
 
-make_signed_cinable!(i8, u8, 4);
-make_signed_cinable!(i16, u16, 6);
-make_signed_cinable!(i32, u32, 11);
-make_signed_cinable!(i64, u64, 20);
-make_signed_cinable!(i128, u128, 40);
-make_signed_cinable!(isize, usize, 21); // TODO: calculate these numbers using const
+make_signed_cinable!(i8);
+make_signed_cinable!(i16);
+make_signed_cinable!(i32);
+make_signed_cinable!(i64);
+make_signed_cinable!(i128);
+make_signed_cinable!(isize);

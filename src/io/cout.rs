@@ -1,3 +1,4 @@
+use crate::integer::Integer;
 use std::io::Write;
 
 pub struct Cout<'a> {
@@ -63,7 +64,9 @@ impl Coutable for &str {
 }
 
 macro_rules! write_integer_inner {
-    ($rest:ident, $buf:ident, $end:ident) => {
+    ($cout:ident, $rest:ident, $buf:ident, $end:ident) => {
+        $cout.flush_if_too_long($buf.len());
+
         loop {
             $end -= 1;
             $buf[$end] = ($rest % 10) as u8 + b'0';
@@ -77,58 +80,54 @@ macro_rules! write_integer_inner {
 }
 
 macro_rules! make_unsigned_coutable {
-    ($t:ty, $max_len:literal) => {
+    ($t:ty) => {
         impl Coutable for $t {
             fn write_to(&self, cout: &mut Cout) {
-                cout.flush_if_too_long($max_len);
-
                 let mut rest = *self;
-                let mut buf = [0u8; $max_len];
-                let mut end = $max_len;
+                let mut buf = [0u8; <$t as Integer>::BASE_10_MAX_LENGTH];
+                let mut end = buf.len();
 
-                write_integer_inner!(rest, buf, end);
+                write_integer_inner!(cout, rest, buf, end);
 
-                cout.buffer[cout.end..cout.end + $max_len - end].copy_from_slice(&buf[end..]);
-                cout.end += $max_len - end;
+                cout.buffer[cout.end..cout.end + buf.len() - end].copy_from_slice(&buf[end..]);
+                cout.end += buf.len() - end;
             }
         }
     };
 }
 
 macro_rules! make_signed_coutable {
-    ($t:ty, $unsigned_t:ty, $max_len:literal) => {
+    ($t:ty) => {
         impl Coutable for $t {
             fn write_to(&self, cout: &mut Cout) {
-                cout.flush_if_too_long($max_len);
-
                 let neg = *self < 0;
-                let mut rest = self.overflowing_abs().0 as $unsigned_t;
-                let mut buf = [0u8; $max_len];
-                let mut end = $max_len;
+                let mut rest = self.overflowing_abs().0 as <$t as Integer>::AsUnsigned;
+                let mut buf = [0u8; <$t as Integer>::BASE_10_MAX_LENGTH];
+                let mut end = buf.len();
 
-                write_integer_inner!(rest, buf, end);
+                write_integer_inner!(cout, rest, buf, end);
                 if neg {
                     end -= 1;
                     buf[end] = b'-';
                 }
 
-                cout.buffer[cout.end..cout.end + $max_len - end].copy_from_slice(&buf[end..]);
-                cout.end += $max_len - end;
+                cout.buffer[cout.end..cout.end + buf.len() - end].copy_from_slice(&buf[end..]);
+                cout.end += buf.len() - end;
             }
         }
     };
 }
 
-make_unsigned_coutable!(u8, 3);
-make_unsigned_coutable!(u16, 5);
-make_unsigned_coutable!(u32, 10);
-make_unsigned_coutable!(u64, 20);
-make_unsigned_coutable!(u128, 39);
-make_unsigned_coutable!(usize, 20); // TODO: calculate these numbers using const
+make_unsigned_coutable!(u8);
+make_unsigned_coutable!(u16);
+make_unsigned_coutable!(u32);
+make_unsigned_coutable!(u64);
+make_unsigned_coutable!(u128);
+make_unsigned_coutable!(usize);
 
-make_signed_coutable!(i8, u8, 4);
-make_signed_coutable!(i16, u16, 6);
-make_signed_coutable!(i32, u32, 11);
-make_signed_coutable!(i64, u64, 20);
-make_signed_coutable!(i128, u128, 40);
-make_signed_coutable!(isize, usize, 21); // TODO: calculate these numbers using const
+make_signed_coutable!(i8);
+make_signed_coutable!(i16);
+make_signed_coutable!(i32);
+make_signed_coutable!(i64);
+make_signed_coutable!(i128);
+make_signed_coutable!(isize);
