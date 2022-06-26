@@ -1,4 +1,4 @@
-use crate::util::*;
+use hcpl_util::*;
 
 fn step<Cost, CostFinder>(
     l: usize,

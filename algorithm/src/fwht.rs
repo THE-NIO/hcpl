@@ -1,4 +1,4 @@
-use crate::algebra::Ring;
+use hcpl_algebra::Ring;
 use std::{convert::TryFrom, fmt::Debug, ops::DivAssign};
 
 /// In-place Fast Walsh–Hadamard Transform of slice a'''

@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-pub use crate::algebra::monoid;
+pub use hcpl_algebra::monoid;
 
 fn up_to_pow2(n: usize) -> usize {
     let mut res = 1;

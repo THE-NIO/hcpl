@@ -1,4 +1,4 @@
-use crate::integer::Integer;
+use hcpl_integer::Integer;
 use std::io::Read;
 
 pub struct Cin<'a> {

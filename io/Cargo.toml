@@ -1,0 +1,8 @@
+[package]
+name = "hcpl_io"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/Hegdahl/hcpl"
+
+[dependencies]
+hcpl_integer = { path = "../integer" }
