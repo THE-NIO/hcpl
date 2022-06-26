@@ -1,5 +1,5 @@
 [package]
-name = "hcpl_data_structure"
+name = "hcpl_divide_and_conquer_dp"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Hegdahl/hcpl"

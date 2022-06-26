@@ -1,7 +1,7 @@
 use hcpl_algebra::Ring;
 use std::{convert::TryFrom, fmt::Debug, ops::DivAssign};
 
-/// In-place Fast Walsh–Hadamard Transform of slice a'''
+/// In-place Fast Walsh–Hadamard Transform of slice `a`
 pub fn fwht<T: Copy + Ring + DivAssign<T> + TryFrom<usize>>(a: &mut [T], inv: bool)
 where
     <T as TryFrom<usize>>::Error: Debug,

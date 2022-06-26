@@ -111,11 +111,11 @@ impl<const MOD: u32> DivAssign for Modnum<MOD> {
     }
 }
 
-impl<const MOD: u32> super::monoid::AdditiveIdentity for Modnum<MOD> {
+impl<const MOD: u32> hcpl_algebra::monoid::AdditiveIdentity for Modnum<MOD> {
     const VALUE: Self = Self::new(0);
 }
 
-impl<const MOD: u32> super::monoid::MultiplicativeIdentity for Modnum<MOD> {
+impl<const MOD: u32> hcpl_algebra::monoid::MultiplicativeIdentity for Modnum<MOD> {
     const VALUE: Self = Self::new(1);
 }
 

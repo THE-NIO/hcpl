@@ -1,5 +1,5 @@
 [package]
-name = "hcpl_algorithm"
+name = "hcpl_fwht"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Hegdahl/hcpl"
@@ -7,4 +7,3 @@ license = "MIT"
 
 [dependencies]
 hcpl_algebra = { path = "../algebra"}
-hcpl_util = { path = "../util"}
