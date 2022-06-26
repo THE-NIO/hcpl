@@ -3,6 +3,7 @@ name = "hcpl_algorithm"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Hegdahl/hcpl"
+license = "MIT"
 
 [dependencies]
 hcpl_algebra = { path = "../algebra"}
