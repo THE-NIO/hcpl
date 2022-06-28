@@ -52,7 +52,7 @@ pub fn solve<S: State>(n: u32, queries: &Vec<(u32, u32)>, mut state: S) -> Vec<S
 /// finding the order inside each smaller triangle,
 /// and joining up the orders so endpoints meet close by.
 /// ```
-/// use hcpl_algorithm::mo::triangle_order;
+/// use hcpl_mo::triangle_order;
 ///
 /// let order = [
 ///     vec![0],
