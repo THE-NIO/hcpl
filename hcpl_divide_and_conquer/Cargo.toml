@@ -1,9 +1,10 @@
 [package]
-name = "hcpl_number_theory"
+name = "hcpl_divide_and_conquer_dp"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Hegdahl/hcpl"
 license = "MIT"
 
 [dependencies]
-hcpl_integer = { path = "../integer" }
+hcpl_algebra = { path = "../hcpl_algebra"}
+hcpl_util = { path = "../hcpl_util"}

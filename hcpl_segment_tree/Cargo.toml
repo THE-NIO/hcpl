@@ -1,9 +1,9 @@
 [package]
-name = "hcpl_io"
+name = "hcpl_segment_tree"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Hegdahl/hcpl"
 license = "MIT"
 
 [dependencies]
-hcpl_integer = { path = "../integer" }
+hcpl_algebra = { path = "../hcpl_algebra"}
