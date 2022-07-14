@@ -31,6 +31,10 @@ macro_rules! _io__input_macro__read_value {
     ($cin:ident; [ $inner:tt $(+ $offset:literal)? $(- $noffset:literal)?; $n:expr ]) => {
         (0..$n).map(|_| hcpl_io::input_macro::read_value!($cin; $inner $(+ $offset)? $(- $noffset)?)).collect::<Vec<_>>()
     };
+    ($cin:ident; bytes) => {{
+        $cin.discard_whitespace();
+        $cin.read_until(|b| b.is_ascii_whitespace())
+    }};
     ($cin:ident; $type:tt $(+ $offset:literal)? $(- $noffset:literal)?) => {
         ($cin.get::<$type>() $(- $offset)? $(+ $noffset)?)
     };
