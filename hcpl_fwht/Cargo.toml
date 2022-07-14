@@ -1,10 +1,9 @@
 [package]
-name = "hcpl_divide_and_conquer_dp"
+name = "hcpl_fwht"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Hegdahl/hcpl"
 license = "MIT"
 
 [dependencies]
-hcpl_algebra = { path = "../algebra"}
-hcpl_util = { path = "../util"}
+hcpl_algebra = { path = "../hcpl_algebra"}
