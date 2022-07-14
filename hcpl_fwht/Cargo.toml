@@ -2,7 +2,7 @@
 name = "hcpl_fwht"
 version = "0.1.0"
 edition = "2021"
-repository = "https://github.com/Hegdahl/hcpl"
+repository = "https://github.com/THE-nio/hcpl"
 license = "MIT"
 
 [dependencies]
