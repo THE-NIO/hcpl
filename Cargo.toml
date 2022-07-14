@@ -1,0 +1,14 @@
+[workspace]
+members = [
+  "hcpl_algebra",
+  "hcpl_divide_and_conquer",
+  "hcpl_fwht",
+  "hcpl_integer",
+  "hcpl_io",
+  "hcpl_mo",
+  "hcpl_modnum",
+  "hcpl_number_theory",
+  "hcpl_segment_tree",
+  "hcpl_tensor",
+  "hcpl_util",
+]
