@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{iter::FromIterator, ops::Range};
 
 pub use hcpl_algebra::monoid;
 
@@ -35,11 +35,16 @@ impl<T: monoid::Monoid + Clone> SegmentTree<T> {
     }
 }
 
-impl<It: std::iter::ExactSizeIterator<Item = T>, T: monoid::Monoid + Clone> From<It>
-    for SegmentTree<T>
-{
-    fn from(it: It) -> Self {
-        Self::new_inner(it.len(), |v| v.extend(it))
+impl<T: monoid::Monoid + Clone> FromIterator<T> for SegmentTree<T> {
+    fn from_iter<It: IntoIterator<Item = T>>(iter: It) -> Self {
+        let iter = iter.into_iter();
+        let (lower, upper) = iter.size_hint();
+        if Some(lower) == upper {
+            Self::new_inner(lower, |v| v.extend(iter))
+        } else {
+            let all_items: Vec<_> = iter.collect();
+            Self::new(&all_items)
+        }
     }
 }
 
