@@ -1,4 +1,4 @@
-pub trait SetMin{
+pub trait SetMin {
     fn set_min(&mut self, other: Self);
 }
 

@@ -32,7 +32,4 @@ macro_rules! _io__output_macro__out_to {
     ($cout:ident;) => {};
 }
 
-pub use crate::{
-    _io__output_macro__make as make,
-    _io__output_macro__out_to as out_to,
-};
+pub use crate::{_io__output_macro__make as make, _io__output_macro__out_to as out_to};

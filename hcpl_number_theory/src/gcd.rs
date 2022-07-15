@@ -1,6 +1,9 @@
 use hcpl_integer::Integer;
 
-pub fn gcd<T: Integer>(su: T, sv: T) -> T::AsUnsigned where T::AsUnsigned: Integer {
+pub fn gcd<T: Integer>(su: T, sv: T) -> T::AsUnsigned
+where
+    T::AsUnsigned: Integer,
+{
     let mut u = su.unsigned_abs();
     let mut v = sv.unsigned_abs();
 

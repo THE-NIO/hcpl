@@ -1,4 +1,4 @@
-mod ring;
 pub mod monoid;
-pub use ring::Ring;
+mod ring;
 pub use monoid::{Monoid, MonoidAction};
+pub use ring::Ring;
