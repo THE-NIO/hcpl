@@ -2,14 +2,6 @@ use std::{iter::FromIterator, ops::Range};
 
 pub use hcpl_algebra::monoid;
 
-fn up_to_pow2(n: usize) -> usize {
-    let mut res = 1;
-    while res < n {
-        res <<= 1;
-    }
-    res
-}
-
 pub struct SegmentTree<T: monoid::Monoid> {
     n: usize,
     pub values: Vec<T>,
@@ -17,7 +9,7 @@ pub struct SegmentTree<T: monoid::Monoid> {
 
 impl<T: monoid::Monoid + Clone> SegmentTree<T> {
     fn new_inner<F: FnOnce(&mut Vec<T>)>(n: usize, f: F) -> Self {
-        let offset = up_to_pow2(n);
+        let offset = n.next_power_of_two();
         let mut values = Vec::with_capacity(2 * offset);
         values.extend(std::iter::repeat(T::IDENTITY).take(offset));
         f(&mut values);
@@ -32,6 +24,13 @@ impl<T: monoid::Monoid + Clone> SegmentTree<T> {
 
     pub fn new(src: &[T]) -> Self {
         Self::new_inner(src.len(), |v| v.extend_from_slice(src))
+    }
+
+    pub fn with_size(size: usize) -> Self {
+        SegmentTree {
+            n: size,
+            values: vec![T::IDENTITY; size.next_power_of_two() * 2],
+        }
     }
 }
 
@@ -69,13 +68,21 @@ impl<'a, T: monoid::Monoid> std::ops::DerefMut for PointReferenceMut<'a, T> {
 
 impl<'a, T: monoid::Monoid> Drop for PointReferenceMut<'a, T> {
     fn drop(&mut self) {
-        while {
-            self.i /= 2;
-            self.i > 0
-        } {
-            self.st.pull(self.i);
+        for idx in parent_chain(self.i) {
+            self.st.pull(idx);
         }
     }
+}
+
+fn try_parent(idx: usize) -> Option<usize> {
+    match idx / 2 {
+        0 => None,
+        n => Some(n),
+    }
+}
+
+fn parent_chain(idx: usize) -> impl Iterator<Item = usize> {
+    std::iter::successors(try_parent(idx), |&idx| try_parent(idx))
 }
 
 impl<T: monoid::Monoid> SegmentTree<T> {
@@ -84,9 +91,13 @@ impl<T: monoid::Monoid> SegmentTree<T> {
         self.values[i] = T::op(&self.values[2 * i], &self.values[2 * i + 1]);
     }
 
+    fn offset(&self) -> usize {
+        self.values.len() / 2
+    }
+
     pub fn get_mut<'a>(&'a mut self, index: usize) -> PointReferenceMut<'a, T> {
         debug_assert!(index < self.n);
-        let offset = self.values.len() / 2;
+        let offset = self.offset();
         PointReferenceMut {
             st: self,
             i: index + offset,
@@ -98,16 +109,16 @@ impl<T: monoid::Monoid> SegmentTree<T> {
         &self.values[index + self.values.len() / 2]
     }
 
-    pub fn fold(&self, index: Range<usize>) -> T {
-        if index.start > index.end {
+    pub fn fold(&self, range: Range<usize>) -> T {
+        if range.start > range.end {
             return T::IDENTITY;
         }
 
-        debug_assert!(index.end <= self.n);
+        debug_assert!(range.end <= self.n);
         let offset = self.values.len() / 2;
 
-        let mut i = index.start + offset - 1;
-        let mut j = index.end + offset;
+        let mut i = range.start + offset - 1;
+        let mut j = range.end + offset;
 
         let mut l = T::IDENTITY;
         let mut r = T::IDENTITY;
