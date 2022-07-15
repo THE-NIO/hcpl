@@ -17,13 +17,13 @@ pub trait MonoidAction<T: Monoid>: Monoid {
     fn apply(f: &Self, x: &T) -> T;
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Debug, Hash)]
 pub struct AddMonoid<T>(pub T);
-#[derive(Clone)]
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Debug, Hash)]
 pub struct MulMonoid<T>(pub T);
-#[derive(Clone)]
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Debug, Hash)]
 pub struct MinMonoid<T>(pub T);
-#[derive(Clone)]
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Debug, Hash)]
 pub struct MaxMonoid<T>(pub T);
 
 impl<T: AdditiveIdentity> Monoid for AddMonoid<T>
