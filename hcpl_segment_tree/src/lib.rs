@@ -1,13 +1,14 @@
+use hcpl_algebra::monoid::Monoid;
 use std::{iter::FromIterator, ops::RangeBounds};
 
 pub use hcpl_algebra::monoid;
 
-pub struct SegmentTree<T: monoid::Monoid> {
+pub struct SegmentTree<T: Monoid> {
     n: usize,
     pub values: Vec<T>,
 }
 
-impl<T: monoid::Monoid + Clone> SegmentTree<T> {
+impl<T: Monoid + Clone> SegmentTree<T> {
     fn new_inner<F: FnOnce(&mut Vec<T>)>(n: usize, f: F) -> Self {
         let offset = n.next_power_of_two();
         let mut values = Vec::with_capacity(2 * offset);
@@ -34,7 +35,7 @@ impl<T: monoid::Monoid + Clone> SegmentTree<T> {
     }
 }
 
-impl<T: monoid::Monoid + Clone> FromIterator<T> for SegmentTree<T> {
+impl<T: Monoid + Clone> FromIterator<T> for SegmentTree<T> {
     fn from_iter<It: IntoIterator<Item = T>>(iter: It) -> Self {
         let iter = iter.into_iter();
         let (lower, upper) = iter.size_hint();
@@ -47,12 +48,12 @@ impl<T: monoid::Monoid + Clone> FromIterator<T> for SegmentTree<T> {
     }
 }
 
-pub struct PointReferenceMut<'a, T: monoid::Monoid> {
+pub struct PointReferenceMut<'a, T: Monoid> {
     st: &'a mut SegmentTree<T>,
     i: usize,
 }
 
-impl<'a, T: monoid::Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -60,13 +61,13 @@ impl<'a, T: monoid::Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
     }
 }
 
-impl<'a, T: monoid::Monoid> std::ops::DerefMut for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid> std::ops::DerefMut for PointReferenceMut<'a, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.st.values[self.i]
     }
 }
 
-impl<'a, T: monoid::Monoid> Drop for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid> Drop for PointReferenceMut<'a, T> {
     fn drop(&mut self) {
         for idx in parent_chain(self.i) {
             self.st.pull(idx);
@@ -85,7 +86,7 @@ fn parent_chain(idx: usize) -> impl Iterator<Item = usize> {
     std::iter::successors(try_parent(idx), |&idx| try_parent(idx))
 }
 
-impl<T: monoid::Monoid> SegmentTree<T> {
+impl<T: Monoid> SegmentTree<T> {
     fn pull(&mut self, i: usize) {
         debug_assert!(i < self.offset());
         self.values[i] = T::op(&self.values[2 * i], &self.values[2 * i + 1]);
@@ -199,7 +200,7 @@ impl<T: monoid::Monoid> SegmentTree<T> {
     }
 }
 
-impl<T: monoid::Monoid + std::fmt::Debug> std::fmt::Debug for SegmentTree<T> {
+impl<T: Monoid + std::fmt::Debug> std::fmt::Debug for SegmentTree<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         struct Layers<'a, T>(&'a [T]);
 
