@@ -1,4 +1,4 @@
-use std::{iter::FromIterator, ops::Range};
+use std::{iter::FromIterator, ops::RangeBounds};
 
 pub use hcpl_algebra::monoid;
 
@@ -109,16 +109,32 @@ impl<T: monoid::Monoid> SegmentTree<T> {
         &self.values[index + self.values.len() / 2]
     }
 
-    pub fn fold(&self, range: Range<usize>) -> T {
-        if range.start > range.end {
+    pub fn fold<R>(&self, range: R) -> T
+    where
+        R: RangeBounds<usize>,
+    {
+        use std::ops::Bound::*;
+
+        let start = match range.start_bound() {
+            Included(&n) => n,
+            Excluded(&n) => n + 1,
+            Unbounded => 0,
+        };
+        let end = match range.end_bound() {
+            Included(&n) => n + 1,
+            Excluded(&n) => n,
+            Unbounded => self.n,
+        };
+
+        if start > end {
             return T::IDENTITY;
         }
 
-        debug_assert!(range.end <= self.n);
-        let offset = self.values.len() / 2;
+        debug_assert!(end <= self.n);
+        let offset = self.offset();
 
-        let mut i = range.start + offset - 1;
-        let mut j = range.end + offset;
+        let mut i = start + offset - 1;
+        let mut j = end + offset;
 
         let mut l = T::IDENTITY;
         let mut r = T::IDENTITY;
