@@ -1,23 +1,16 @@
-use std::{iter::FromIterator, ops::Range};
+use hcpl_algebra::monoid::Monoid;
+use std::{iter::FromIterator, ops::RangeBounds};
 
 pub use hcpl_algebra::monoid;
 
-fn up_to_pow2(n: usize) -> usize {
-    let mut res = 1;
-    while res < n {
-        res <<= 1;
-    }
-    res
-}
-
-pub struct SegmentTree<T: monoid::Monoid> {
+pub struct SegmentTree<T: Monoid> {
     n: usize,
     pub values: Vec<T>,
 }
 
-impl<T: monoid::Monoid + Clone> SegmentTree<T> {
+impl<T: Monoid + Clone> SegmentTree<T> {
     fn new_inner<F: FnOnce(&mut Vec<T>)>(n: usize, f: F) -> Self {
-        let offset = up_to_pow2(n);
+        let offset = n.next_power_of_two();
         let mut values = Vec::with_capacity(2 * offset);
         values.extend(std::iter::repeat(T::IDENTITY).take(offset));
         f(&mut values);
@@ -33,9 +26,16 @@ impl<T: monoid::Monoid + Clone> SegmentTree<T> {
     pub fn new(src: &[T]) -> Self {
         Self::new_inner(src.len(), |v| v.extend_from_slice(src))
     }
+
+    pub fn with_size(size: usize) -> Self {
+        SegmentTree {
+            n: size,
+            values: vec![T::IDENTITY; size.next_power_of_two() * 2],
+        }
+    }
 }
 
-impl<T: monoid::Monoid + Clone> FromIterator<T> for SegmentTree<T> {
+impl<T: Monoid + Clone> FromIterator<T> for SegmentTree<T> {
     fn from_iter<It: IntoIterator<Item = T>>(iter: It) -> Self {
         let iter = iter.into_iter();
         let (lower, upper) = iter.size_hint();
@@ -48,12 +48,12 @@ impl<T: monoid::Monoid + Clone> FromIterator<T> for SegmentTree<T> {
     }
 }
 
-pub struct PointReferenceMut<'a, T: monoid::Monoid> {
+pub struct PointReferenceMut<'a, T: Monoid> {
     st: &'a mut SegmentTree<T>,
     i: usize,
 }
 
-impl<'a, T: monoid::Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -61,53 +61,91 @@ impl<'a, T: monoid::Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
     }
 }
 
-impl<'a, T: monoid::Monoid> std::ops::DerefMut for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid> std::ops::DerefMut for PointReferenceMut<'a, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.st.values[self.i]
     }
 }
 
-impl<'a, T: monoid::Monoid> Drop for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid> Drop for PointReferenceMut<'a, T> {
     fn drop(&mut self) {
-        while {
-            self.i /= 2;
-            self.i > 0
-        } {
-            self.st.pull(self.i);
+        for idx in parent_chain(self.i) {
+            self.st.pull(idx);
         }
     }
 }
 
-impl<T: monoid::Monoid> SegmentTree<T> {
+fn try_parent(idx: usize) -> Option<usize> {
+    match idx / 2 {
+        0 => None,
+        n => Some(n),
+    }
+}
+
+fn parent_chain(idx: usize) -> impl Iterator<Item = usize> {
+    std::iter::successors(try_parent(idx), |&idx| try_parent(idx))
+}
+
+impl<T: Monoid> SegmentTree<T> {
     fn pull(&mut self, i: usize) {
-        debug_assert!(i < self.values.len() / 2);
+        debug_assert!(i < self.offset());
         self.values[i] = T::op(&self.values[2 * i], &self.values[2 * i + 1]);
     }
 
-    pub fn get_mut<'a>(&'a mut self, index: usize) -> PointReferenceMut<'a, T> {
+    fn offset(&self) -> usize {
+        self.values.len() / 2
+    }
+
+    pub fn get_mut(&mut self, index: usize) -> PointReferenceMut<'_, T> {
         debug_assert!(index < self.n);
-        let offset = self.values.len() / 2;
+
+        let offset = self.offset();
         PointReferenceMut {
             st: self,
             i: index + offset,
         }
     }
 
-    pub fn get<'a>(&'a self, index: usize) -> &T {
+    pub fn get(&self, index: usize) -> &T {
         debug_assert!(index < self.n);
-        &self.values[index + self.values.len() / 2]
+        &self.values[index + self.offset()]
     }
 
-    pub fn fold(&self, index: Range<usize>) -> T {
-        if index.start > index.end {
+    pub fn add(&mut self, mut index: usize, value: &T) {
+        index += self.offset();
+        self.values[index] = T::op(&self.values[index], value);
+
+        for i in parent_chain(index) {
+            self.values[i] = T::op(&self.values[i], value);
+        }
+    }
+
+    pub fn fold<R>(&self, range: R) -> T
+    where
+        R: RangeBounds<usize>,
+    {
+        use std::ops::Bound::*;
+
+        let start = match range.start_bound() {
+            Included(&n) => n,
+            Excluded(&n) => n + 1,
+            Unbounded => 0,
+        };
+        let end = match range.end_bound() {
+            Included(&n) => n + 1,
+            Excluded(&n) => n,
+            Unbounded => self.n,
+        };
+
+        if start > end {
             return T::IDENTITY;
         }
 
-        debug_assert!(index.end <= self.n);
-        let offset = self.values.len() / 2;
+        debug_assert!(end <= self.n);
+        let offset = self.offset();
 
-        let mut i = index.start + offset - 1;
-        let mut j = index.end + offset;
+        let mut i = start + offset - 1;
+        let mut j = end + offset;
 
         let mut l = T::IDENTITY;
         let mut r = T::IDENTITY;
@@ -135,7 +173,7 @@ impl<T: monoid::Monoid> SegmentTree<T> {
             return (start, T::IDENTITY);
         }
 
-        let offset = self.values.len() / 2;
+        let offset = self.offset();
         let mut i = start + offset;
         let mut sum = T::IDENTITY;
         let mut nxt_sum;
@@ -171,18 +209,26 @@ impl<T: monoid::Monoid> SegmentTree<T> {
     }
 }
 
-impl<T: monoid::Monoid + std::fmt::Debug> std::fmt::Debug for SegmentTree<T> {
+impl<T: Monoid + std::fmt::Debug> std::fmt::Debug for SegmentTree<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("SegmentTree{")?;
+        struct Layers<'a, T>(&'a [T]);
 
-        let mut begin = 1;
-        while begin < self.values.len() {
-            f.debug_list()
-                .entries(&self.values[begin..begin << 1])
-                .finish()?;
-            begin <<= 1;
+        impl<'a, T: std::fmt::Debug> std::fmt::Debug for Layers<'a, T> {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let mut debug_list = f.debug_list();
+
+                let mut begin = 1;
+                while begin < self.0.len() {
+                    debug_list.entry(&&self.0[begin..begin << 1]);
+                    begin <<= 1;
+                }
+
+                debug_list.finish()
+            }
         }
 
-        f.write_str("}")
+        f.debug_struct("SegmentTree")
+            .field("layers", &Layers(&self.values))
+            .finish()
     }
 }

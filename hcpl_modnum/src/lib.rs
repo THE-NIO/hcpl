@@ -82,6 +82,7 @@ impl<const MOD: u32> Mul for Modnum<MOD> {
 impl<const MOD: u32> Div for Modnum<MOD> {
     type Output = Self;
 
+    #[allow(clippy::suspicious_arithmetic_impl)]
     fn div(self, rhs: Self) -> Self::Output {
         self * rhs.inv()
     }
@@ -127,8 +128,8 @@ impl<const MOD: u32> From<usize> for Modnum<MOD> {
     }
 }
 
-impl<const MOD: u32> Into<u32> for Modnum<MOD> {
-    fn into(self) -> u32 {
-        self.0
+impl<const MOD: u32> From<Modnum<MOD>> for u32 {
+    fn from(x: Modnum<MOD>) -> u32 {
+        x.0
     }
 }

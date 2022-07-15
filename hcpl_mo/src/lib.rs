@@ -6,7 +6,7 @@ pub trait State {
     fn get(&self) -> Self::Output;
 }
 
-pub fn solve<S: State>(n: u32, queries: &Vec<(u32, u32)>, mut state: S) -> Vec<S::Output> {
+pub fn solve<S: State>(n: u32, queries: &[(u32, u32)], mut state: S) -> Vec<S::Output> {
     let mut indices: Vec<usize> = (0..queries.len()).collect();
     indices.sort_by_cached_key(|&i| {
         let (x, y1) = queries[i];
@@ -92,15 +92,15 @@ pub fn triangle_order(x: u32, y: u32, n: u32) -> u64 {
 
     if y < med {
         // top
-        return triangle_order(x, y, med);
+        triangle_order(x, y, med)
     } else if x >= big {
         // right
-        return triangle_order(x - big, y - big, med) + med_area + square_area;
+        triangle_order(x - big, y - big, med) + med_area + square_area
     } else if x < n - y {
         // left
-        return triangle_order(y - med, big - x - 1, big) + med_area;
+        triangle_order(y - med, big - x - 1, big) + med_area
     } else {
         // bottom
-        return triangle_order(sml + med - y, x - 1, sml) + med_area + big_area;
+        triangle_order(sml + med - y, x - 1, sml) + med_area + big_area
     }
 }
