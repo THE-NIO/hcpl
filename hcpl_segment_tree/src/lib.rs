@@ -87,7 +87,7 @@ fn parent_chain(idx: usize) -> impl Iterator<Item = usize> {
 
 impl<T: monoid::Monoid> SegmentTree<T> {
     fn pull(&mut self, i: usize) {
-        debug_assert!(i < self.values.len() / 2);
+        debug_assert!(i < self.offset());
         self.values[i] = T::op(&self.values[2 * i], &self.values[2 * i + 1]);
     }
 
@@ -97,6 +97,7 @@ impl<T: monoid::Monoid> SegmentTree<T> {
 
     pub fn get_mut(&mut self, index: usize) -> PointReferenceMut<'_, T> {
         debug_assert!(index < self.n);
+
         let offset = self.offset();
         PointReferenceMut {
             st: self,
@@ -106,7 +107,7 @@ impl<T: monoid::Monoid> SegmentTree<T> {
 
     pub fn get(&self, index: usize) -> &T {
         debug_assert!(index < self.n);
-        &self.values[index + self.values.len() / 2]
+        &self.values[index + self.offset()]
     }
 
     pub fn fold<R>(&self, range: R) -> T
@@ -162,7 +163,7 @@ impl<T: monoid::Monoid> SegmentTree<T> {
             return (start, T::IDENTITY);
         }
 
-        let offset = self.values.len() / 2;
+        let offset = self.offset();
         let mut i = start + offset;
         let mut sum = T::IDENTITY;
         let mut nxt_sum;
