@@ -95,7 +95,7 @@ impl<T: monoid::Monoid> SegmentTree<T> {
         self.values.len() / 2
     }
 
-    pub fn get_mut<'a>(&'a mut self, index: usize) -> PointReferenceMut<'a, T> {
+    pub fn get_mut(&mut self, index: usize) -> PointReferenceMut<'_, T> {
         debug_assert!(index < self.n);
         let offset = self.offset();
         PointReferenceMut {
@@ -104,7 +104,7 @@ impl<T: monoid::Monoid> SegmentTree<T> {
         }
     }
 
-    pub fn get<'a>(&'a self, index: usize) -> &T {
+    pub fn get(&self, index: usize) -> &T {
         debug_assert!(index < self.n);
         &self.values[index + self.values.len() / 2]
     }
