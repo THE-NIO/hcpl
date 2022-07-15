@@ -200,16 +200,24 @@ impl<T: monoid::Monoid> SegmentTree<T> {
 
 impl<T: monoid::Monoid + std::fmt::Debug> std::fmt::Debug for SegmentTree<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("SegmentTree{")?;
+        struct Layers<'a, T>(&'a [T]);
 
-        let mut begin = 1;
-        while begin < self.values.len() {
-            f.debug_list()
-                .entries(&self.values[begin..begin << 1])
-                .finish()?;
-            begin <<= 1;
+        impl<'a, T: std::fmt::Debug> std::fmt::Debug for Layers<'a, T> {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let mut debug_list = f.debug_list();
+
+                let mut begin = 1;
+                while begin < self.0.len() {
+                    debug_list.entry(&&self.0[begin..begin << 1]);
+                    begin <<= 1;
+                }
+
+                debug_list.finish()
+            }
         }
 
-        f.write_str("}")
+        f.debug_struct("SegmentTree")
+            .field("layers", &Layers(&self.values))
+            .finish()
     }
 }
