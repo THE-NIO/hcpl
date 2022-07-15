@@ -111,6 +111,15 @@ impl<T: Monoid> SegmentTree<T> {
         &self.values[index + self.offset()]
     }
 
+    pub fn add(&mut self, mut index: usize, value: &T) {
+        index += self.offset();
+        self.values[index] = T::op(&self.values[index], value);
+
+        for i in parent_chain(index) {
+            self.values[i] = T::op(&self.values[i], value);
+        }
+    }
+
     pub fn fold<R>(&self, range: R) -> T
     where
         R: RangeBounds<usize>,
