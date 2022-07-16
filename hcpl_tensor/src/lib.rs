@@ -16,6 +16,18 @@ impl<T, const D: usize> Tensor<T, D> {
         }
     }
 
+    pub fn from_vec(v: Vec<T>, dims: [usize; D]) -> Self {
+        assert_eq!(dims.iter().product::<usize>(), v.len());
+        Self { inner: v, dims }
+    }
+
+    pub fn from_iter_and_dims<It: Iterator<Item = T>>(iter: It, dims: [usize; D]) -> Self {
+        let size = dims.iter().product();
+        let inner: Vec<_> = iter.take(size).collect();
+        assert_eq!(inner.len(), size);
+        Self { inner, dims }
+    }
+
     fn index_pos(&self, index: [usize; D]) -> usize {
         let mut pos = 0;
         for (s, i) in self.dims.iter().zip(index) {

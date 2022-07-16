@@ -1,71 +1,43 @@
+use std::io::BufRead;
+
 use hcpl_integer::Integer;
-use std::io::Read;
 
 pub struct Cin<'a> {
-    buffer: [u8; Cin::BUFFER_SIZE],
-    begin: usize,
-    end: usize,
     stdin: std::io::StdinLock<'a>,
-    is_eof: bool,
 }
 
 impl<'a> Cin<'a> {
-    const BUFFER_SIZE: usize = 1 << 17;
-
     pub fn new(stdin: &'a std::io::Stdin) -> Self {
         Self {
-            buffer: [0; Self::BUFFER_SIZE],
-            begin: 0,
-            end: 0,
             stdin: stdin.lock(),
-            is_eof: false,
         }
     }
 
-    fn lshift_buffer(&mut self) {
-        if self.begin != 0 {
-            self.buffer.copy_within(self.begin..self.end, 0);
-            self.end -= self.begin;
-            self.begin = 0;
-        }
+    pub fn buffer(&mut self) -> &[u8] {
+        self.stdin.fill_buf().unwrap()
     }
 
-    pub fn refill(&mut self) {
-        if self.is_eof {
-            return;
-        }
-
-        self.lshift_buffer();
-        let read = self.stdin.read(&mut self.buffer[self.end..]).unwrap();
-
-        if read == 0 {
-            self.is_eof = true;
-        } else {
-            self.end += read;
-        }
+    pub fn consume(&mut self, amt: usize) {
+        self.stdin.consume(amt)
     }
 
-    /// Read until predicate(byte) returns true.
-    /// Returns a string containing the read characters,
-    /// excluding the one where the predicate returned true.
     pub fn read_until<P: FnMut(u8) -> bool>(&mut self, mut predicate: P) -> Vec<u8> {
+        let mut b = self.buffer();
+
         let mut res = Vec::new();
 
         loop {
-            match self.buffer[self.begin..self.end]
-                .iter()
-                .copied()
-                .position(&mut predicate)
-            {
-                Some(pos) => {
-                    res.extend_from_slice(&self.buffer[self.begin..self.begin + pos]);
-                    self.begin += pos;
+            match b.iter().copied().position(&mut predicate) {
+                Some(i) => {
+                    res.extend_from_slice(&b[..i]);
+                    self.consume(i);
                     break;
                 }
                 None => {
-                    res.extend_from_slice(&self.buffer[self.begin..self.end]);
-                    self.begin = self.end;
-                    self.refill();
+                    res.extend_from_slice(&b);
+                    let n = b.len();
+                    self.consume(n);
+                    b = self.buffer();
                 }
             }
         }
@@ -73,21 +45,18 @@ impl<'a> Cin<'a> {
         res
     }
 
-    /// Same as read_until, except the result is not stored.
     pub fn discard_until<P: FnMut(u8) -> bool>(&mut self, mut predicate: P) {
+        let mut b = self.buffer();
         loop {
-            match self.buffer[self.begin..self.end]
-                .iter()
-                .copied()
-                .position(&mut predicate)
-            {
-                Some(pos) => {
-                    self.begin += pos;
+            match b.iter().copied().position(&mut predicate) {
+                Some(i) => {
+                    self.consume(i);
                     break;
                 }
                 None => {
-                    self.begin = self.end;
-                    self.refill();
+                    let n = b.len();
+                    self.consume(n);
+                    b = self.buffer();
                 }
             }
         }
@@ -121,19 +90,40 @@ impl Cinable for char {
     }
 }
 
+impl Cinable for bool {
+    fn read_from(cin: &mut Cin) -> Self {
+        let c: char = cin.get();
+        if c == '1' {
+            true
+        } else {
+            assert_eq!(c, '0');
+            false
+        }
+    }
+}
+
 macro_rules! read_integer_inner {
     ($t:ty, $cin:ident) => {{
         let mut res = 0;
+        let mut b = $cin.buffer();
+        debug_assert!(b.len() != 0);
+
+        let mut p = 0;
+
         while {
-            if $cin.begin == $cin.buffer.len() {
-                $cin.refill();
+            if p == b.len() {
+                $cin.consume(p);
+                p = 0;
+                b = $cin.buffer();
+                debug_assert!(b.len() != 0);
             }
-            !$cin.buffer[$cin.begin].is_ascii_whitespace()
+            !b[p].is_ascii_whitespace()
         } {
             res *= 10;
-            res += ($cin.buffer[$cin.begin] - b'0') as $t;
-            $cin.begin += 1;
+            res += (b[p] - b'0') as $t;
+            p += 1;
         }
+        $cin.consume(p);
         res
     }};
 }
@@ -155,12 +145,16 @@ macro_rules! make_signed_cinable {
             fn read_from(cin: &mut Cin) -> Self {
                 cin.discard_whitespace();
 
-                let neg = if cin.buffer[cin.begin] == b'-' {
-                    cin.begin += 1;
+                let b = cin.buffer();
+                debug_assert!(b.len() != 0);
+
+                let neg = if b[0] == b'-' {
+                    cin.consume(1);
                     true
                 } else {
                     false
                 };
+
                 let res = read_integer_inner!(<$t as Integer>::AsUnsigned, cin);
                 if neg {
                     res.overflowing_neg().0 as $t

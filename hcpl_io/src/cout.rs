@@ -23,6 +23,11 @@ impl<'a> Cout<'a> {
         self.end = 0;
     }
 
+    pub fn real_flush(&mut self) {
+        self.flush();
+        self.stdout.flush().unwrap();
+    }
+
     pub fn flush_if_too_long(&mut self, n: usize) {
         if self.end + n > Self::BUFFER_SIZE {
             self.flush()
