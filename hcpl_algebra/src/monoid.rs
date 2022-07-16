@@ -1,7 +1,7 @@
 /// Set equipped with associative operation `op`
 /// and identity `IDENTITY`.
 ///
-/// Implementing this trait promises:
+/// Implementations of this trait promise:
 /// `Self::op(Self::op(a, b), c) = Self::op(a, Self::op(b, c))`
 /// `Self::op(IDENTITY, a) = Self::op(a, IDENTITY) = a`
 pub trait Monoid {
@@ -11,8 +11,12 @@ pub trait Monoid {
 
 /// Monoid that acts on another monoid T.
 ///
-/// Implementing this trait promises:
-/// `Self::apply(f, T::op(a, b)) = T::op(Self::apply(f, a), Self::apply(f, b))`
+/// Implementations of this trait must respect the following laws:
+/// - `apply` must define a monoid action, ie.
+///   `Self::apply(f, Self::apply(g, a)) = Self::apply(Self::op(f, g), a)`
+///   `Self::apply(Self::IDENTITY, a) = a`
+/// - the monoid action must preserve the structure of the monoid it acts on, ie.
+///   `Self::apply(f, T::op(a, b)) = T::op(Self::apply(f, a), Self::apply(f, b))`
 pub trait MonoidAction<T: Monoid>: Monoid {
     fn apply(f: &Self, x: &T) -> T;
 }
