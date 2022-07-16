@@ -31,7 +31,7 @@ fn step<Cost, CostFinder>(
     step(mid + 1, r, opt, optr, get_cost, max, dp, new_dp);
 }
 
-pub fn divide_and_conquer_dp<Cost, CostFinder>(n: usize, k: usize, mut get_cost: CostFinder) -> Cost
+pub fn solve<Cost, CostFinder>(n: usize, k: usize, mut get_cost: CostFinder) -> Cost
 where
     CostFinder: FnMut(usize, usize) -> Cost,
     Cost: Ord + Clone + std::ops::Add<Output = Cost>,

@@ -1,7 +1,7 @@
 [workspace]
 members = [
   "hcpl_algebra",
-  "hcpl_divide_and_conquer",
+  "hcpl_divide_and_conquer_dp",
   "hcpl_fwht",
   "hcpl_integer",
   "hcpl_io",
