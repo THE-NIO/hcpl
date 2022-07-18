@@ -3,7 +3,7 @@ use std::{iter::FromIterator, ops::RangeBounds};
 
 pub use hcpl_algebra::monoid;
 
-pub struct SegmentTree<T: Monoid> {
+pub struct SegmentTree<T: Monoid + Clone> {
     n: usize,
     pub values: Vec<T>,
 }
@@ -48,12 +48,12 @@ impl<T: Monoid + Clone> FromIterator<T> for SegmentTree<T> {
     }
 }
 
-pub struct PointReferenceMut<'a, T: Monoid> {
+pub struct PointReferenceMut<'a, T: Monoid + Clone> {
     st: &'a mut SegmentTree<T>,
     i: usize,
 }
 
-impl<'a, T: Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid + Clone> std::ops::Deref for PointReferenceMut<'a, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -61,13 +61,13 @@ impl<'a, T: Monoid> std::ops::Deref for PointReferenceMut<'a, T> {
     }
 }
 
-impl<'a, T: Monoid> std::ops::DerefMut for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid + Clone> std::ops::DerefMut for PointReferenceMut<'a, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.st.values[self.i]
     }
 }
 
-impl<'a, T: Monoid> Drop for PointReferenceMut<'a, T> {
+impl<'a, T: Monoid + Clone> Drop for PointReferenceMut<'a, T> {
     fn drop(&mut self) {
         for idx in parent_chain(self.i) {
             self.st.pull(idx);
@@ -86,10 +86,10 @@ fn parent_chain(idx: usize) -> impl Iterator<Item = usize> {
     std::iter::successors(try_parent(idx), |&idx| try_parent(idx))
 }
 
-impl<T: Monoid> SegmentTree<T> {
+impl<T: Monoid + Clone> SegmentTree<T> {
     fn pull(&mut self, i: usize) {
         debug_assert!(i < self.offset());
-        self.values[i] = T::op(&self.values[2 * i], &self.values[2 * i + 1]);
+        self.values[i] = T::op(self.values[2 * i].clone(), self.values[2 * i + 1].clone());
     }
 
     fn offset(&self) -> usize {
@@ -113,10 +113,10 @@ impl<T: Monoid> SegmentTree<T> {
 
     pub fn add(&mut self, mut index: usize, value: &T) {
         index += self.offset();
-        self.values[index] = T::op(&self.values[index], value);
+        self.values[index] = T::op(self.values[index].clone(), (*value).clone());
 
         for i in parent_chain(index) {
-            self.values[i] = T::op(&self.values[i], value);
+            self.values[i] = T::op(self.values[i].clone(), value.clone());
         }
     }
 
@@ -152,17 +152,17 @@ impl<T: Monoid> SegmentTree<T> {
 
         while i + 1 < j {
             if i & 1 == 0 {
-                l = T::op(&l, &self.values[i + 1]);
+                l = T::op(l, self.values[i + 1].clone());
             }
             if j & 1 == 1 {
-                r = T::op(&self.values[j - 1], &r);
+                r = T::op(self.values[j - 1].clone(), r);
             }
 
             i >>= 1;
             j >>= 1;
         }
 
-        T::op(&l, &r)
+        T::op(l, r)
     }
 
     pub fn right_while<P: Fn(&T) -> bool>(&self, start: usize, predicate: P) -> (usize, T) {
@@ -181,12 +181,12 @@ impl<T: Monoid> SegmentTree<T> {
         loop {
             i >>= i.trailing_zeros();
 
-            nxt_sum = T::op(&sum, &self.values[i]);
+            nxt_sum = T::op(sum.clone(), self.values[i].clone());
 
             if !predicate(&nxt_sum) {
                 while i < offset {
                     i <<= 1;
-                    nxt_sum = T::op(&sum, &self.values[i]);
+                    nxt_sum = T::op(sum.clone(), self.values[i].clone());
                     if predicate(&nxt_sum) {
                         sum = nxt_sum;
                         i += 1;
@@ -209,7 +209,7 @@ impl<T: Monoid> SegmentTree<T> {
     }
 }
 
-impl<T: Monoid + std::fmt::Debug> std::fmt::Debug for SegmentTree<T> {
+impl<T: Monoid + Clone + std::fmt::Debug> std::fmt::Debug for SegmentTree<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         struct Layers<'a, T>(&'a [T]);
 
