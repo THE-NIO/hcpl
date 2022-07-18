@@ -10,5 +10,6 @@ members = [
   "hcpl_number_theory",
   "hcpl_segment_tree",
   "hcpl_tensor",
+  "hcpl_union_find",
   "hcpl_util",
 ]
