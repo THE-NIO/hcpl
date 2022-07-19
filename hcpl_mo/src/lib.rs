@@ -71,7 +71,7 @@ pub fn solve<S: State>(n: u32, queries: &[(u32, u32)], mut state: S) -> Vec<S::O
 /// }
 /// ```
 ///
-/// Sorting this way ensures O(n log q) insertions and deletions in Mo's algorithm,
+/// Sorting this way ensures O(n sqrt q) insertions and deletions in Mo's algorithm,
 /// without needing to pick any bucket size.
 pub fn triangle_order(x: u32, y: u32, n: u32) -> u64 {
     debug_assert!(x < n);
