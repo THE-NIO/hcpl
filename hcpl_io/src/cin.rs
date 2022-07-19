@@ -34,7 +34,7 @@ impl<'a> Cin<'a> {
                     break;
                 }
                 None => {
-                    res.extend_from_slice(&b);
+                    res.extend_from_slice(b);
                     let n = b.len();
                     self.consume(n);
                     b = self.buffer();

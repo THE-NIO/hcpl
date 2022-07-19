@@ -1,5 +1,6 @@
 use hcpl_util::*;
 
+#[allow(clippy::too_many_arguments)]
 fn step<Cost, CostFinder>(
     l: usize,
     r: usize,
@@ -20,8 +21,13 @@ fn step<Cost, CostFinder>(
     let mid = l + (r - l) / 2;
     let mut opt_pair = (max.clone(), usize::MAX);
 
-    for i in optl..=std::cmp::min(optr, mid) {
-        opt_pair.set_min((dp[i].clone() + get_cost(i, mid), i));
+    for (i, val) in dp
+        .iter()
+        .enumerate()
+        .take(std::cmp::min(optr, mid) + 1)
+        .skip(optl)
+    {
+        opt_pair.set_min((val.clone() + get_cost(i, mid), i));
     }
 
     let (val, opt) = opt_pair;

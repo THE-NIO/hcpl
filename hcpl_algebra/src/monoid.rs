@@ -77,7 +77,7 @@ where
     const IDENTITY: Self = MaxMonoid(<T as MaximumIdentity>::VALUE);
 
     fn op(MaxMonoid(l): Self, MaxMonoid(r): Self) -> Self {
-        MaxMonoid(std::cmp::max(l, r).clone())
+        MaxMonoid(std::cmp::max(l, r))
     }
 }
 

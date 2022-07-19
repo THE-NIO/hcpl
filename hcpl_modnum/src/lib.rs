@@ -16,7 +16,7 @@ impl<const MOD: u32> Display for Modnum<MOD> {
 
 impl<const MOD: u32> Modnum<MOD> {
     pub const fn new(x: u32) -> Self {
-        Self { 0: x % MOD }
+        Self(x % MOD)
     }
 
     pub fn pow(mut self, mut e: usize) -> Self {
@@ -43,9 +43,7 @@ impl<const MOD: u32> Add for Modnum<MOD> {
 
     fn add(self, rhs: Self) -> Self::Output {
         let res = self.0 + rhs.0;
-        Self {
-            0: if res >= MOD { res - MOD } else { res },
-        }
+        Self(if res >= MOD { res - MOD } else { res })
     }
 }
 
@@ -56,7 +54,7 @@ impl<const MOD: u32> Neg for Modnum<MOD> {
         if self.0 == 0 {
             self
         } else {
-            Self { 0: MOD - self.0 }
+            Self(MOD - self.0)
         }
     }
 }
@@ -73,9 +71,7 @@ impl<const MOD: u32> Mul for Modnum<MOD> {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        Self {
-            0: (self.0 as u64 * rhs.0 as u64 % MOD as u64) as u32,
-        }
+        Self((self.0 as u64 * rhs.0 as u64 % MOD as u64) as u32)
     }
 }
 
@@ -122,9 +118,7 @@ impl<const MOD: u32> hcpl_algebra::monoid::MultiplicativeIdentity for Modnum<MOD
 
 impl<const MOD: u32> From<usize> for Modnum<MOD> {
     fn from(x: usize) -> Self {
-        Self {
-            0: (x % MOD as usize) as u32,
-        }
+        Self((x % MOD as usize) as u32)
     }
 }
 
