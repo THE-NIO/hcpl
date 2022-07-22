@@ -3,6 +3,7 @@ use std::{iter::FromIterator, ops::RangeBounds};
 
 pub use hcpl_algebra::monoid;
 
+#[derive(Clone)]
 pub struct SegmentTree<T: Monoid + Clone> {
     n: usize,
     pub values: Vec<T>,
