@@ -35,4 +35,8 @@ impl UnionFind {
             Some((i, j))
         }
     }
+
+    pub fn cardinality(&self, i: usize) -> usize {
+        -self.data[self.find(i)].get() as usize
+    }
 }
