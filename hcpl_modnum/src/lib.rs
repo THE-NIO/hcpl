@@ -3,11 +3,9 @@ use std::{
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 /// An element of ℤ/mℤ where m = MOD. Implemented over `u32`.
 pub struct Modnum<const MOD: u32>(u32);
-
-impl<const MOD: u32> Eq for Modnum<MOD> {}
 
 impl<const MOD: u32> Display for Modnum<MOD> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
