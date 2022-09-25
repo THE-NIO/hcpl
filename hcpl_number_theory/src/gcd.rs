@@ -1,5 +1,6 @@
 use hcpl_integer::Integer;
 
+/// Computes the GCD of `su` and `sv`.
 pub fn gcd<T: Integer>(su: T, sv: T) -> T::AsUnsigned
 where
     T::AsUnsigned: Integer,
