@@ -4,6 +4,7 @@ use std::{iter::FromIterator, ops::RangeBounds};
 pub use hcpl_algebra::monoid;
 
 #[derive(Clone)]
+/// A segment tree with values of type `T`
 pub struct SegmentTree<T: Monoid + Clone> {
     n: usize,
     pub values: Vec<T>,
@@ -24,10 +25,12 @@ impl<T: Monoid + Clone> SegmentTree<T> {
         res
     }
 
+    /// Creates a segment tree from a slice.
     pub fn new(src: &[T]) -> Self {
         Self::new_inner(src.len(), |v| v.extend_from_slice(src))
     }
 
+    /// Creates a segment tree initialised with `T::IDENTITY`.
     pub fn with_size(size: usize) -> Self {
         SegmentTree {
             n: size,
@@ -49,6 +52,7 @@ impl<T: Monoid + Clone> FromIterator<T> for SegmentTree<T> {
     }
 }
 
+/// A mutable reference to a leaf node in a [`SegmentTree`]
 pub struct PointReferenceMut<'a, T: Monoid + Clone> {
     st: &'a mut SegmentTree<T>,
     i: usize,
@@ -97,6 +101,7 @@ impl<T: Monoid + Clone> SegmentTree<T> {
         self.values.len() / 2
     }
 
+    /// Returns a mutable reference to the leaf node with the given `index`.
     pub fn get_mut(&mut self, index: usize) -> PointReferenceMut<'_, T> {
         debug_assert!(index < self.n);
 
@@ -107,11 +112,13 @@ impl<T: Monoid + Clone> SegmentTree<T> {
         }
     }
 
+    /// Returns an immutable reference to the leaf node with the given `index`.
     pub fn get(&self, index: usize) -> &T {
         debug_assert!(index < self.n);
         &self.values[index + self.offset()]
     }
 
+    /// Replaces `tree[index]` with `T::op(tree[index], value)`.
     pub fn add(&mut self, mut index: usize, value: &T) {
         index += self.offset();
         self.values[index] = T::op(self.values[index].clone(), (*value).clone());
@@ -121,6 +128,7 @@ impl<T: Monoid + Clone> SegmentTree<T> {
         }
     }
 
+    /// Returns the monoid fold of all the values in the given `range`.
     pub fn fold<R>(&self, range: R) -> T
     where
         R: RangeBounds<usize>,
