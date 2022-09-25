@@ -1,6 +1,7 @@
 use super::monoid::{AdditiveIdentity, MultiplicativeIdentity};
 use std::ops::{Add, Mul, Sub};
 
+/// A ring.
 pub trait Ring
 where
     Self: Sized

@@ -5,7 +5,10 @@
 /// `Self::op(Self::op(a, b), c) = Self::op(a, Self::op(b, c))`
 /// `Self::op(IDENTITY, a) = Self::op(a, IDENTITY) = a`
 pub trait Monoid {
+    /// The identity element of the monoid.
     const IDENTITY: Self;
+
+    /// The monoid operation.
     fn op(l: Self, r: Self) -> Self;
 }
 
@@ -81,19 +84,35 @@ where
     }
 }
 
+/// Trait for types with an additive identity.
+///
+/// The law `<Self as AdditiveIdentity>::VALUE + n = n` should be satisfied.
 pub trait AdditiveIdentity {
+    /// The additive identity of `Self`.
     const VALUE: Self;
 }
 
+/// Trait for types with an multiplicative identity.
+///
+/// The law `<Self as MultiplicativeIdentity>::VALUE * n = n` should be satisfied.
 pub trait MultiplicativeIdentity {
+    /// The multiplicative identity of `Self`.
     const VALUE: Self;
 }
 
+/// Trait for types with an identity with respect to [`std::cmp::min`].
+///
+/// The law `<Self as MinimumIdentity>::VALUE.min(n) = n` should be satisfied.
 pub trait MinimumIdentity {
+    /// The minimum identity of `Self`.
     const VALUE: Self;
 }
 
+/// Trait for types with an identity with respect to [`std::cmp::max`].
+///
+/// The law `<Self as MaximumIdentity>::VALUE.max(n) = n` should be satisfied.
 pub trait MaximumIdentity {
+    /// The maximum identity of `Self`.
     const VALUE: Self;
 }
 
