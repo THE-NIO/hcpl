@@ -4,3 +4,11 @@ version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/THE-nio/hcpl"
 license = "MIT"
+
+[dependencies]
+hcpl_algebra = { path = "../hcpl_algebra", optional = true }
+
+[features]
+# Once (if) CodeForces upgrades to Rust 1.60+, this should be changed
+# to `dep:hcpl_algebra` to avoid implicitly creating an hcpl_algebra feature.
+tagged = ["hcpl_algebra"]
