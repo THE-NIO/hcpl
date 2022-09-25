@@ -99,7 +99,6 @@ impl<V: Monoid> Extend<V> for UnionFind<V> {
         T: IntoIterator<Item = V>,
     {
         let iter = iter.into_iter();
-
         let (lower_bound, _) = iter.size_hint();
 
         self.parent_map.reserve(lower_bound);
@@ -109,5 +108,16 @@ impl<V: Monoid> Extend<V> for UnionFind<V> {
             self.parent_map.push(-1);
             self.data.push(Some(item));
         }
+    }
+}
+
+impl<V: Monoid> FromIterator<V> for UnionFind<V> {
+    fn from_iter<T>(iter: T) -> Self
+    where
+        T: IntoIterator<Item = V>,
+    {
+        let mut result = Self::empty();
+        result.extend(iter);
+        result
     }
 }
