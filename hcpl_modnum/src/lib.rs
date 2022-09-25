@@ -4,6 +4,7 @@ use std::{
 };
 
 #[derive(Copy, Clone, Debug, PartialEq)]
+/// An element of ℤ/mℤ where m = MOD. Implemented over `u32`.
 pub struct Modnum<const MOD: u32>(u32);
 
 impl<const MOD: u32> Eq for Modnum<MOD> {}
@@ -15,10 +16,13 @@ impl<const MOD: u32> Display for Modnum<MOD> {
 }
 
 impl<const MOD: u32> Modnum<MOD> {
+    /// Constructs a `Modnum<MOD>` from a `u32`. Equivalent to `Modnum::from(x)`
     pub const fn new(x: u32) -> Self {
+        // Self::from(x)  // Requires const trait impls
         Self(x % MOD)
     }
 
+    /// Modular exponentiation by squaring.
     pub fn pow(mut self, mut e: usize) -> Self {
         let mut a = Self::new(1);
         while e != 0 {
@@ -32,9 +36,27 @@ impl<const MOD: u32> Modnum<MOD> {
         a
     }
 
-    /// USE ONLY IF MOD IS PRIME
+    /// Calculates the inverse of `self`, **assuming `MOD` is prime**.
     pub fn inv(self) -> Self {
         self.pow(MOD as usize - 2)
+    }
+}
+
+impl<const MOD: u32> From<u32> for Modnum<MOD> {
+    fn from(n: u32) -> Self {
+        Self(n % MOD)
+    }
+}
+
+impl<const MOD: u32> From<usize> for Modnum<MOD> {
+    fn from(x: usize) -> Self {
+        Self((x % MOD as usize) as u32)
+    }
+}
+
+impl<const MOD: u32> From<Modnum<MOD>> for u32 {
+    fn from(x: Modnum<MOD>) -> u32 {
+        x.0
     }
 }
 
@@ -114,16 +136,4 @@ impl<const MOD: u32> hcpl_algebra::monoid::AdditiveIdentity for Modnum<MOD> {
 
 impl<const MOD: u32> hcpl_algebra::monoid::MultiplicativeIdentity for Modnum<MOD> {
     const VALUE: Self = Self::new(1);
-}
-
-impl<const MOD: u32> From<usize> for Modnum<MOD> {
-    fn from(x: usize) -> Self {
-        Self((x % MOD as usize) as u32)
-    }
-}
-
-impl<const MOD: u32> From<Modnum<MOD>> for u32 {
-    fn from(x: Modnum<MOD>) -> u32 {
-        x.0
-    }
 }
