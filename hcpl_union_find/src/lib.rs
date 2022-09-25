@@ -1,16 +1,20 @@
 use std::cell::Cell;
 
+/// A union find data structure implemented with path compression
+/// and union-by-size.
 pub struct UnionFind {
     data: Vec<Cell<i32>>,
 }
 
 impl UnionFind {
+    /// Creates a new Union-Find collection with `n` nodes
     pub fn new(n: usize) -> Self {
         Self {
             data: vec![Cell::new(-1); n],
         }
     }
 
+    /// Returns the representative for the set containing `i`
     pub fn find(&self, i: usize) -> usize {
         if self.data[i].get() < 0 {
             i
@@ -21,6 +25,10 @@ impl UnionFind {
         }
     }
 
+    /// Unites the sets containing `i` and `j`.
+    ///
+    /// If `i` and `j` are already elements of the same set, this function returns
+    /// `None`. Otherwise, it returns `Some((new_root, old_root))`.
     pub fn unite(&mut self, mut i: usize, mut j: usize) -> Option<(usize, usize)> {
         i = self.find(i);
         j = self.find(j);
@@ -36,6 +44,7 @@ impl UnionFind {
         }
     }
 
+    /// Returns the size of the set containing `i`.
     pub fn cardinality(&self, i: usize) -> usize {
         -self.data[self.find(i)].get() as usize
     }
