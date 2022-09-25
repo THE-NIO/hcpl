@@ -19,6 +19,14 @@ impl<V: Monoid> UnionFind<V> {
         }
     }
 
+    /// Creates a new empty Union-Find collection
+    pub fn empty() -> Self {
+        Self {
+            parent_map: Vec::new(),
+            data: Vec::new(),
+        }
+    }
+
     /// Adds a new node to the Union-Find collection.
     pub fn push(&mut self, v: V) -> usize {
         self.parent_map.push(-1);
@@ -48,15 +56,13 @@ impl<V: Monoid> UnionFind<V> {
         if i == j {
             None
         } else {
+            let new_data = V::op(self.data[i].take().unwrap(), self.data[j].take().unwrap());
             if -self.parent_map[i] < -self.parent_map[j] {
                 std::mem::swap(&mut i, &mut j);
             }
             self.parent_map[i] += self.parent_map[j];
             self.parent_map[j] = i as isize;
-            self.data[i] = Some(V::op(
-                self.data[i].take().unwrap(),
-                self.data[j].take().unwrap(),
-            ));
+            self.data[i] = Some(new_data);
             Some((i, j))
         }
     }
