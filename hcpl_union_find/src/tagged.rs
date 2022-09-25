@@ -92,3 +92,22 @@ impl<V: Monoid> UnionFind<V> {
         self.data[root].as_mut().unwrap()
     }
 }
+
+impl<V: Monoid> Extend<V> for UnionFind<V> {
+    fn extend<T>(&mut self, iter: T)
+    where
+        T: IntoIterator<Item = V>,
+    {
+        let iter = iter.into_iter();
+
+        let (lower_bound, _) = iter.size_hint();
+
+        self.parent_map.reserve(lower_bound);
+        self.data.reserve(lower_bound);
+
+        for item in iter {
+            self.parent_map.push(-1);
+            self.data.push(Some(item));
+        }
+    }
+}
