@@ -1,6 +1,7 @@
 use std::cmp::Ord;
 use std::ops::*;
 
+/// A trait for integer types.
 pub trait Integer:
     Copy
     + Clone
@@ -19,23 +20,37 @@ pub trait Integer:
     + ShlAssign<u32>
     + ShrAssign<u32>
 {
+    /// The unsigned variant of this type.
     type AsUnsigned;
+    /// The signed variant of this type.
     type AsSigned;
+    /// Zero.
     const ZERO: Self;
+    /// One.
     const ONE: Self;
+    /// Ten.
     const TEN: Self;
+    /// The length of the largest number of this type, in base ten.
     const BASE_10_MAX_LENGTH: usize;
+    /// Returns the number of leading ones in the binary representation of `self`.
     fn leading_ones(self) -> u32;
+    /// Returns the number of leading zeros in the binary representation of `self`.
     fn leading_zeros(self) -> u32;
+    /// Returns the number of trailing ones in the binary representation of `self`.
     fn trailing_ones(self) -> u32;
+    /// Returns the number of trailing zeros in the binary representation of `self`.
     fn trailing_zeros(self) -> u32;
+    /// Returns the absolute value of `self` as an unsigned integer without panicking.
     fn unsigned_abs(self) -> Self::AsUnsigned;
+    /// Returns `true` if `self == Self::ZERO`.
     fn is_zero(self) -> bool {
         self == Self::ZERO
     }
 }
 
+/// An unsigned integer type.
 pub trait UnsignedInteger: Integer {}
+/// A signed integer type.
 pub trait SignedInteger: Integer {}
 
 macro_rules! make_int {
