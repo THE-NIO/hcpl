@@ -27,6 +27,11 @@ impl<V: Monoid> UnionFind<V> {
         }
     }
 
+    /// Returns the size of this Union-Find collection
+    pub fn len(&self) -> usize {
+        self.parent_map.len()
+    }
+
     /// Adds a new node to the Union-Find collection.
     pub fn push(&mut self, v: V) -> usize {
         self.parent_map.push(-1);
