@@ -92,7 +92,7 @@ pub trait AdditiveIdentity {
     const VALUE: Self;
 }
 
-/// Trait for types with an multiplicative identity.
+/// Trait for types with a multiplicative identity.
 ///
 /// The law `<Self as MultiplicativeIdentity>::VALUE * n = n` should be satisfied.
 pub trait MultiplicativeIdentity {

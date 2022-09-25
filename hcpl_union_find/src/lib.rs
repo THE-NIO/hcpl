@@ -1,7 +1,7 @@
 use std::cell::Cell;
 
-/// A union find data structure implemented with path compression
-/// and union-by-size.
+/// A Union-Find data structure using path compression and
+/// union-by-size.
 pub struct UnionFind {
     data: Vec<Cell<i32>>,
 }
