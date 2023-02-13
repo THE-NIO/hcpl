@@ -84,6 +84,39 @@ where
     }
 }
 
+impl<A: Monoid> Monoid for (A,) {
+    const IDENTITY: Self = (A::IDENTITY,);
+
+    fn op(l: Self, r: Self) -> Self {
+        (
+            Monoid::op(l.0, r.0),
+        )
+    }
+}
+
+impl<A: Monoid, B: Monoid> Monoid for (A, B) {
+    const IDENTITY: Self = (A::IDENTITY, B::IDENTITY);
+
+    fn op(l: Self, r: Self) -> Self {
+        (
+            Monoid::op(l.0, r.0),
+            Monoid::op(l.1, r.1),
+        )
+    }
+}
+
+impl<A: Monoid, B: Monoid, C: Monoid> Monoid for (A, B, C) {
+    const IDENTITY: Self = (A::IDENTITY, B::IDENTITY, C::IDENTITY);
+
+    fn op(l: Self, r: Self) -> Self {
+        (
+            Monoid::op(l.0, r.0),
+            Monoid::op(l.1, r.1),
+            Monoid::op(l.2, r.2),
+        )
+    }
+}
+
 /// Trait for types with an additive identity.
 ///
 /// The law `<Self as AdditiveIdentity>::VALUE + n = n` should be satisfied.
