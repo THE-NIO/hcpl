@@ -3,7 +3,6 @@ macro_rules! _recursion__let_rec {
     ($f:ident = |$($arg_id:ident: $arg_ty:ty),*| -> $ret:ty $body:block) => {
         let $f = {
             pub trait AlmostFTrait {
-                #[inline(always)]
                 fn call(&self, $($arg_id: $arg_ty),*) -> $ret;
             }
             pub struct Almost<F>(F);
