@@ -1,23 +1,27 @@
 #[macro_export]
 macro_rules! _recursion__let_rec {
     ($f:ident = |$($arg_id:ident: $arg_ty:ty),*| -> $ret:ty $body:block) => {
-        trait AlmostFTrait {
-            fn call(&self, $($arg_id: $arg_ty),*) -> $ret;
-        }
-        struct Almost<F>(F);
-        let almost_f = Almost(|almost_f: &dyn AlmostFTrait,  $($arg_id: $arg_ty),*| -> $ret {
-            let $f = |$($arg_id: $arg_ty),*| {
-                almost_f.call($($arg_id),*)
-            };
-            $body
-        });
-        impl<F: Fn(&dyn AlmostFTrait $(,$arg_ty)*) -> $ret> AlmostFTrait for Almost<F> {
-            fn call(&self, $($arg_id: $arg_ty),*) -> $ret {
-                (self.0)(self, $($arg_id),*)
+        let $f = {
+            pub trait AlmostFTrait {
+                #[inline(always)]
+                fn call(&self, $($arg_id: $arg_ty),*) -> $ret;
             }
-        }
-        let $f = |$($arg_id: $arg_ty),*| {
-            almost_f.call($($arg_id),*)
+            pub struct Almost<F>(F);
+            impl<F: Fn(&dyn AlmostFTrait $(,$arg_ty)*) -> $ret> AlmostFTrait for Almost<F> {
+                #[inline(always)]
+                fn call(&self, $($arg_id: $arg_ty),*) -> $ret {
+                    (self.0)(self, $($arg_id),*)
+                }
+            }
+            let almost_f = Almost(|almost_f: &dyn AlmostFTrait,  $($arg_id: $arg_ty),*| -> $ret {
+                let $f = |$($arg_id: $arg_ty),*| {
+                    almost_f.call($($arg_id),*)
+                };
+                $body
+            });
+            move |$($arg_id: $arg_ty),*| {
+                almost_f.call($($arg_id),*)
+            }
         };
     }
 }
