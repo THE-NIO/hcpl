@@ -1,0 +1,8 @@
+[package]
+name = "hcpl_recursion"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/THE-nio/hcpl"
+license = "MIT"
+
+[dependencies]
