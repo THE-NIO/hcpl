@@ -13,6 +13,7 @@ macro_rules! _recursion__let_rec {
                 }
             }
             let almost_f = Almost(|almost_f: &dyn AlmostFTrait,  $($arg_id: $arg_ty),*| -> $ret {
+                #[allow(unused_variables)]
                 let $f = |$($arg_id: $arg_ty),*| {
                     almost_f.call($($arg_id),*)
                 };
