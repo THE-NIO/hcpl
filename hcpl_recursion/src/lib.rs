@@ -42,8 +42,8 @@ macro_rules! _recursion__let_rec_mut__impl {
             without_cap
         };
         macro_rules! $f {
-            ($dol ($dol inner_args:tt),*) => {
-                $f($(&mut $cap_id,)* $dol ($dol inner_args,)*)
+            ($dol ($dol inner_args:tt)*) => {
+                $f($(&mut $cap_id,)* $dol ($dol inner_args)*)
             }
         }
     };
