@@ -28,17 +28,21 @@ macro_rules! _recursion__let_rec {
 #[macro_export]
 macro_rules! _recursion__let_rec_mut__impl {
     ($f:ident = [ $($cap_id:ident: $cap_ty:ty),* $(,)? ] |$($arg_id:ident: $arg_ty:ty),*| -> $ret:ty $body:block $dol:tt) => {
-        hcpl_recursion::let_rec!(without_cap = |$($cap_id: &mut $cap_ty,)* $($arg_id: $arg_ty),*| -> $ret {
-            macro_rules! $f {
-                ($dol ($dol inner_args:tt),*) => {
-                    without_cap($($cap_id,)* $dol ($dol inner_args,)*)
+        let $f = {
+            hcpl_recursion::let_rec!(without_cap = |$($cap_id: &mut $cap_ty,)* $($arg_id: $arg_ty),*| -> $ret {
+                #[allow(unused_macros)]
+                macro_rules! $f {
+                    ($dol ($dol inner_args:tt)*) => {
+                        without_cap($($cap_id,)* $dol ($dol inner_args)*)
+                    }
                 }
-            }
-            $body
-        });
+                $body
+            });
+            without_cap
+        };
         macro_rules! $f {
             ($dol ($dol inner_args:tt),*) => {
-                without_cap($(&mut $cap_id,)* $dol ($dol inner_args,)*)
+                $f($(&mut $cap_id,)* $dol ($dol inner_args,)*)
             }
         }
     };
@@ -47,8 +51,8 @@ macro_rules! _recursion__let_rec_mut__impl {
             hcpl_recursion::let_rec!(without_cap = |$($cap_id: &mut $cap_ty),*| -> $ret {
                 #[allow(unused_macros)]
                 macro_rules! $f {
-                    ($dol ($dol inner_args:tt),*) => {
-                        without_cap($($cap_id,)* $dol ($dol inner_args,)*)
+                    ($dol ($dol inner_args:tt)*) => {
+                        without_cap($($cap_id,)* $dol ($dol inner_args)*)
                     }
                 }
                 $body
