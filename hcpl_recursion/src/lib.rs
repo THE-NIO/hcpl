@@ -2,10 +2,10 @@
 macro_rules! _recursion__let_rec {
     ($f:ident = |$($arg_id:ident: $arg_ty:ty),*| -> $ret:ty $body:block) => {
         let $f = {
-            pub trait AlmostFTrait {
+            trait AlmostFTrait {
                 fn call(&self, $($arg_id: $arg_ty),*) -> $ret;
             }
-            pub struct Almost<F>(F);
+            struct Almost<F>(F);
             impl<F: Fn(&dyn AlmostFTrait $(,$arg_ty)*) -> $ret> AlmostFTrait for Almost<F> {
                 #[inline(always)]
                 fn call(&self, $($arg_id: $arg_ty),*) -> $ret {
