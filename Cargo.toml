@@ -9,6 +9,7 @@ members = [
   "hcpl_modnum",
   "hcpl_number_theory",
   "hcpl_segment_tree",
+  "hcpl_recursion",
   "hcpl_rmq",
   "hcpl_tensor",
   "hcpl_union_find",
