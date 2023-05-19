@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/THE-nio/hcpl"
 license = "MIT"
+
+[dependencies]
+hcpl_algebra = { version = "0.1.0", path = "../hcpl_algebra" }
+hcpl_number_theory = { path = "../hcpl_number_theory" }

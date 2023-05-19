@@ -7,5 +7,4 @@ license = "MIT"
 
 [dependencies]
 hcpl_algebra = { path = "../hcpl_algebra" }
-# Maybe this can be generalised to cover both FFTs and NTTs
-hcpl_complex = { path = "../hcpl_complex" }
+hcpl_number_theory = { path = "../hcpl_number_theory" }

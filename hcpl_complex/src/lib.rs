@@ -30,6 +30,24 @@ impl Complex {
             im: angle.sin(),
         }
     }
+
+    pub fn conj(self) -> Self {
+        Self {
+            re: self.re,
+            im: -self.im,
+        }
+    }
+
+    pub fn squared_norm(self) -> f64 {
+        self.re * self.re + self.im * self.im
+    }
+
+    pub fn inv(self) -> Self {
+        Self {
+            re: self.re / self.squared_norm(),
+            im: -self.im / self.squared_norm(),
+        }
+    }
 }
 
 impl std::fmt::Display for Complex {
@@ -41,6 +59,15 @@ impl std::fmt::Display for Complex {
 impl From<f64> for Complex {
     fn from(value: f64) -> Self {
         Self { re: value, im: 0. }
+    }
+}
+
+impl From<usize> for Complex {
+    fn from(value: usize) -> Self {
+        Self {
+            re: value as f64,
+            im: 0.,
+        }
     }
 }
 
@@ -112,6 +139,14 @@ impl std::ops::Mul<f64> for Complex {
     }
 }
 
+impl std::ops::Div<Complex> for Complex {
+    type Output = Complex;
+
+    fn div(self, rhs: Complex) -> Self::Output {
+        self * rhs.inv()
+    }
+}
+
 impl std::ops::Div<f64> for Complex {
     type Output = Complex;
 
@@ -159,6 +194,12 @@ impl std::ops::MulAssign<f64> for Complex {
     }
 }
 
+impl std::ops::DivAssign<Complex> for Complex {
+    fn div_assign(&mut self, rhs: Complex) {
+        *self = *self / rhs;
+    }
+}
+
 impl std::ops::DivAssign<f64> for Complex {
     fn div_assign(&mut self, rhs: f64) {
         *self = *self / rhs;
@@ -186,5 +227,30 @@ impl std::iter::Product<Complex> for Complex {
         }
 
         result
+    }
+}
+
+impl hcpl_algebra::monoid::AdditiveIdentity for Complex {
+    const VALUE: Self = Complex::ZERO;
+}
+impl hcpl_algebra::monoid::MultiplicativeIdentity for Complex {
+    const VALUE: Self = Complex::ONE;
+}
+
+impl hcpl_number_theory::roots::TryNthRootOfUnity for Complex {
+    type Error = std::convert::Infallible;
+
+    fn try_nth_root_of_unity(n: usize) -> Result<Self, Self::Error>
+    where
+        Self: Sized,
+    {
+        Ok(Self::cis(2. * std::f64::consts::PI / n as f64))
+    }
+
+    fn try_nth_root_of_unity_inv(n: usize) -> Result<Self, Self::Error>
+    where
+        Self: Sized,
+    {
+        Ok(Self::cis(-2. * std::f64::consts::PI / n as f64))
     }
 }

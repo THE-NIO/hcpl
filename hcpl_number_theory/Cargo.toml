@@ -6,4 +6,5 @@ repository = "https://github.com/THE-nio/hcpl"
 license = "MIT"
 
 [dependencies]
+hcpl_algebra = { path = "../hcpl_algebra" }
 hcpl_integer = { path = "../hcpl_integer" }
