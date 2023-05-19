@@ -1,0 +1,6 @@
+[package]
+name = "hcpl_complex"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/THE-nio/hcpl"
+license = "MIT"
