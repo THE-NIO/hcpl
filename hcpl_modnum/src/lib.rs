@@ -135,3 +135,46 @@ impl<const MOD: u32> hcpl_algebra::monoid::AdditiveIdentity for Modnum<MOD> {
 impl<const MOD: u32> hcpl_algebra::monoid::MultiplicativeIdentity for Modnum<MOD> {
     const VALUE: Self = Self::new(1);
 }
+
+impl<const N: u32> hcpl_number_theory::roots::TryNthRootOfUnity for Modnum<N> {
+    type Error = &'static str;
+
+    fn try_nth_root_of_unity(n: usize) -> Result<Self, Self::Error> {
+        if n == 0 {
+            Err("n must be positive")
+        } else if n == 1 {
+            Ok(Self::new(1))
+        } else if (N - 1) as usize % n != 0 {
+            Err("n is not a divisor of MOD - 1")
+        } else {
+            for base in 2.. {
+                #[cfg(debug_assertions)]
+                eprintln!("trying base {}", base);
+                let attempt = Self::new(base).pow((N - 1) as usize / n);
+                let mut d = 0;
+                if loop {
+                    d += 1;
+                    if d * d > n {
+                        break true;
+                    }
+                    if n % d != 0 {
+                        continue;
+                    }
+                    if attempt.pow(d as usize) == Self::new(1) {
+                        break false;
+                    }
+                    if d != 1 && d * d != n && attempt.pow((n / d) as usize) == Self::new(1) {
+                        break false;
+                    }
+                } {
+                    return Ok(attempt);
+                }
+            }
+            unreachable!()
+        }
+    }
+
+    fn try_nth_root_of_unity_inv(n: usize) -> Result<Self, Self::Error> {
+        Ok(Self::try_nth_root_of_unity(n)?.inv())
+    }
+}

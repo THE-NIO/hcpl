@@ -1,5 +1,5 @@
 [package]
-name = "hcpl_modnum"
+name = "hcpl_fft"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/THE-nio/hcpl"
@@ -8,3 +8,7 @@ license = "MIT"
 [dependencies]
 hcpl_algebra = { path = "../hcpl_algebra" }
 hcpl_number_theory = { path = "../hcpl_number_theory" }
+hcpl_complex = { path = "../hcpl_complex", optional = true }
+
+[features]
+real = [ "dep:hcpl_complex" ]
