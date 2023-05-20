@@ -1,3 +1,6 @@
+#[cfg(feature = "real")]
+pub mod real;
+
 use hcpl_algebra::monoid::MultiplicativeIdentity;
 use hcpl_number_theory::roots::TryNthRootOfUnity;
 use std::fmt::Debug;
