@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 mod cin;
 mod cout;
 pub mod input_macro;

@@ -65,8 +65,8 @@ fn derive_cinable_for_struct(
 
     let ts = quote! {
         #[automatically_derived]
-        impl #impl_generics ::hcpl_io::Cinable for #name #ty_generics #where_clause {
-            fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+        impl #impl_generics hcpl_io::Cinable for #name #ty_generics #where_clause {
+            fn read_from(cin: &mut hcpl_io::Cin) -> Self {
                 #read_from_fields
             }
         }
@@ -85,8 +85,8 @@ fn derive_cinable_for_enum(
 
     let ts = quote! {
         #[automatically_derived]
-        impl #impl_generics ::hcpl_io::Cinable for #name #ty_generics #where_clause {
-            fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+        impl #impl_generics hcpl_io::Cinable for #name #ty_generics #where_clause {
+            fn read_from(cin: &mut hcpl_io::Cin) -> Self {
                 #read_from_variants
             }
         }
@@ -105,8 +105,8 @@ fn derive_cinable_for_union(
 
     let ts = quote! {
         #[automatically_derived]
-        impl #impl_generics ::hcpl_io::Cinable for #name #ty_generics #where_clause {
-            fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+        impl #impl_generics hcpl_io::Cinable for #name #ty_generics #where_clause {
+            fn read_from(cin: &mut hcpl_io::Cin) -> Self {
                 #read_from_union
             }
         }
