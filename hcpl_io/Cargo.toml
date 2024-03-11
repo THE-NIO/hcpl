@@ -7,3 +7,7 @@ license = "MIT"
 
 [dependencies]
 hcpl_integer = { path = "../hcpl_integer" }
+hcpl_proc_macro = { path = "../hcpl_proc_macro" }
+
+[features]
+derive = []

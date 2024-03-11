@@ -2,6 +2,9 @@ use std::io::BufRead;
 
 use hcpl_integer::Integer;
 
+#[cfg(feature = "derive")]
+pub use hcpl_proc_macro::Cinable;
+
 pub struct Cin<'a> {
     stdin: std::io::StdinLock<'a>,
 }
