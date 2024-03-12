@@ -2,8 +2,11 @@ This module contains various tools for standard I/O operations,
 specifically used for competitive programming.
 
 # The `Cinable` derive macro
-You can `derive(Cinable)` for all accepted `derive` inputs:
+You can `derive(Cinable)` for all accepted derive inputs:
 struct, enum, and union.
+
+Please note that this derive macro is available on **crate
+feature** `derive` only.
 
 ## Using `derive(Cinable)` on a struct
 Here is an example of `derive(Cinable)` usage on all of three kinds
