@@ -29,8 +29,8 @@ pub fn derive_cinable(item: proc_macro::TokenStream) -> proc_macro::TokenStream 
     let item_name = &item.ident;
 
     set_dummy(quote! {
-        impl ::hcpl_io::Cinable for #item_name {
-            fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+        impl hcpl_io::Cinable for #item_name {
+            fn read_from(cin: &mut hcpl_io::Cin) -> Self {
                 unimplemented!();
             }
         }
