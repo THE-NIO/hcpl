@@ -14,4 +14,5 @@ members = [
   "hcpl_tensor",
   "hcpl_union_find",
   "hcpl_util",
+  "hcpl_proc_macro",
 ]
