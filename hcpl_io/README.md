@@ -35,8 +35,8 @@ like the following.
 #    y: i32,
 # }
 #[automatically_derived]
-impl ::hcpl_io::Cinable for StructStruct {
-    fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+impl hcpl_io::Cinable for StructStruct {
+    fn read_from(cin: &mut hcpl_io::Cin) -> Self {
         StructStruct {
             x: cin.get(),
             y: cin.get(),
@@ -46,16 +46,16 @@ impl ::hcpl_io::Cinable for StructStruct {
 
 # struct TupleStruct(bool, u64);
 #[automatically_derived]
-impl ::hcpl_io::Cinable for TupleStruct {
-    fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+impl hcpl_io::Cinable for TupleStruct {
+    fn read_from(cin: &mut hcpl_io::Cin) -> Self {
         TupleStruct(cin.get(), cin.get())
     }
 }
 
 # struct UnitStruct;
 #[automatically_derived]
-impl ::hcpl_io::Cinable for UnitStruct {
-    fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+impl hcpl_io::Cinable for UnitStruct {
+    fn read_from(cin: &mut hcpl_io::Cin) -> Self {
         UnitStruct
     }
 }
@@ -99,8 +99,8 @@ like the following.
 #     Size,
 # }
 #[automatically_derived]
-impl ::hcpl_io::Cinable for UfdsOperations {
-    fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+impl hcpl_io::Cinable for UfdsOperations {
+    fn read_from(cin: &mut hcpl_io::Cin) -> Self {
         let tag = cin.get::<char>();
         match tag {
             'u' => {
@@ -148,8 +148,8 @@ like the following.
 #     another_byte: u8,
 # }
 #[automatically_derived]
-impl ::hcpl_io::Cinable for Ascii {
-    fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+impl hcpl_io::Cinable for Ascii {
+    fn read_from(cin: &mut hcpl_io::Cin) -> Self {
         let tag = cin.get::<u16>();
         match tag {
             2 => Self { ch: cin.get() },
@@ -225,8 +225,8 @@ will expand to something like the following.
 #     ThreeDigits,
 # }
 #[automatically_derived]
-impl ::hcpl_io::Cinable for NumberType {
-    fn read_from(cin: &mut ::hcpl_io::Cin) -> Self {
+impl hcpl_io::Cinable for NumberType {
+    fn read_from(cin: &mut hcpl_io::Cin) -> Self {
         let tag = cin.get::<i32>();
         match tag {
             1 => Self::One,
